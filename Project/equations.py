@@ -37,5 +37,5 @@ def simulation_step(new_U):
     # print(f"Obliczone H_p: {H_p}")
 
 if __name__ == "__main__":
-    simulate_step(10)
-    simulate_step(9)
+    simulation_step(10)
+    simulation_step(9)
