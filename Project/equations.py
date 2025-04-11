@@ -1,7 +1,7 @@
 from const import  *
 from variable import *
-def calculate_new_A():
 
+def calculate_new_A():
     part_1 = k_m / (R_w + L_w / T_p)
     part_2 = U_z + (L_w / T_p) * (U_pz / R_w) - k_e * omega_s
 
@@ -23,13 +23,19 @@ def calculate_new_H_p():
 def calculate_new_omega_s():
     return omega_s + A * T_p / R
 
-if __name__ == "__main__":
+def simulation_step(new_U):
+    global A, omega_s, V_p, H_p, U_pz, U_z
+    U_z = new_U
     A = calculate_new_A()
-    print(f"Obliczone A: {A}")
     omega_s = calculate_new_omega_s()
-    print(f"Obliczone omega_s: {omega_s}")
     V_p = calculate_new_V_p()
-    print(f"Obliczone V_p: {V_p}")
     H_p = calculate_new_H_p()
-    print(f"Obliczone H_p: {H_p}")
     U_pz = U_z
+    # print(f"Obliczone A: {A}")
+    # print(f"Obliczone omega_s: {omega_s}")
+    # print(f"Obliczone V_p: {V_p}")
+    # print(f"Obliczone H_p: {H_p}")
+
+if __name__ == "__main__":
+    simulate_step(10)
+    simulate_step(9)
