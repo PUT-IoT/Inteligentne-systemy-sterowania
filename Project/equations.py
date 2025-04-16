@@ -2,12 +2,11 @@ from const import  *
 from variable import *
 
 def calculate_new_A():
-    part_1 = k_m / (R_w + L_w / T_p)
+    part_1 = k_m / [ R * (R_w + L_w / T_p)]
     part_2 = U_z + (L_w / T_p) * (U_pz / R_w) - k_e * omega_s
 
     part_3 = (
-        (part_1 * part_2 - B * omega_s - M_obc) / R
-        - (M_pw - M_w - M_l) * G
+        part_1 * part_2 - (M_pw - M_w - M_l) * G
     )
 
     part_4 = M_wir / 2 - (M_w + M_l + M_pw)

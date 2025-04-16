@@ -7,10 +7,13 @@ R_w = 10 # rezystancja zastępcza uzwojeń wirnika (Ω)
 L_w = 10 # indukcyjność zastępcza uzwojeń wirnika (H)
 k_e = 10 # stała elektryczna, zależna m.in. od strumienia magnetycznego stojana oraz liczby zwojów w uzwojeniach wirnika
 k_m = 10 # stała mechaniczna, zależna m.in. od strumienia magnetycznego stojana oraz liczby zwojów w uzwojeń wirnika
-B = 10 # współczynnik tarcia lepkiego zredukowany do wału wirnika
-M_obc = 10 # stały moment obciążenia silnika (Nm)
 T_p = 0.01 # czas próbkowania (s)
 
+#Uzyte w poprzednim wzorze, zostawione na wszelki zapas
+# B = 10 # współczynnik tarcia lepkiego zredukowany do wału wirnika
+# M_obc = 10 # stały moment obciążenia silnika (Nm)
+
+# Stałe wykorzystane przy wyprowadzaniu wzorów (raczej niepotrzebne)
 # N_w = 1  # siła naciągu liny pomiędzy wałem wirnika a windą
 # N_p = 1 # siła naciągu liny pomiędzy wałem wirnika a przeciwwagą
 # Q_w = 1 # ciężar windy
