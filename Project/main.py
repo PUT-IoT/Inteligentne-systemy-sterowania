@@ -17,10 +17,10 @@ app.layout = html.Div([
     dcc.Slider(
         id='uz-slider',
         min=0,
-        max=100,
-        step=1,
+        max=1500,
+        step=50,
         value=5,
-        marks={i: str(i) for i in range(0, 100)}
+        marks={i: str(i) for i in range(0, 1500, 50)}
     ),
 
     dcc.Graph(id='height-plot'),
