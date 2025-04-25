@@ -38,3 +38,16 @@ def reset_simulation():
     variable.V_p = 0
     variable.H_p = 0
     variable.A = 0
+
+# https://www.gmv.pl/wytyczne-elektryczne.html
+def is_simulation_realistic():
+    ok = True
+    curr_power = variable.U_z/const.R_w * variable.U_z
+    if curr_power > 2200:
+        ok = False
+        print(f"Prob. too high power (overheat) - {curr_power}")
+    intensity = variable.U_z / const.R_w
+    if variable.U_z/const.R_w > 65:
+        ok = False
+        print(f"Too high intensity -> Too high power voltage or too low resistance - {intensity}")
+    return ok

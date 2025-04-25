@@ -16,11 +16,11 @@ app.layout = html.Div([
     html.Label("Napięcie Uz (V):"),
     dcc.Slider(
         id='uz-slider',
-        min=0,
-        max=1500,
-        step=50,
+        min=-120,
+        max=120,
+        step=5,
         value=5,
-        marks={i: str(i) for i in range(0, 1500, 50)}
+        marks={i: str(i) for i in range(-120, 121, 5)}
     ),
 
     dcc.Graph(id='height-plot'),
@@ -63,6 +63,7 @@ def update_simulation(Uz):
     height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość (m)'))
     height_fig.update_layout(title='Wysokość w czasie', xaxis_title='Czas (s)', yaxis_title='H (m)')
 
+    equations.is_simulation_realistic()
     return omega_fig, acc_fig, height_fig
 
 if __name__ == '__main__':
