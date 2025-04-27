@@ -5,3 +5,10 @@ omega_s = 0 # prędkość kątowa wirnika
 V_p = 0 # prędkość poprzednia windy
 H_p = 0 # wysokość poprzednia windy (czas próbkowania temu)
 A = 0 # przyspieszenie układu
+
+H_requested = 0 # wysokość zadana
+
+#Regulator PI
+sum_e = 0 # suma uchybów
+Kp = 1 # wzmocnienie regulatora
+Ti = 1 # czas zdwojenia
