@@ -12,24 +12,68 @@ steps = int(const.T_s / const.T_p)
 app = Dash(__name__)
 
 app.layout = html.Div([
-    html.H1("Symulacja silnika – sterowanie napięciem (?)"),
-    # html.Label("Napięcie Uz (V):"),
-    # dcc.Slider(
-    #     id='uz-slider',
-    #     min=-120,
-    #     max=120,
-    #     step=5,
-    #     value=5,
-    #     marks={i: str(i) for i in range(-120, 121, 5)}
-    # ),
+    html.H1("Symulacja silnika – sterowanie napięciem"),
+
+    html.Div(id='current-values'),
+
     html.Label("Wysokość zadana H (m):"),
     dcc.Slider(
         id='uz-slider',
         min=0,
+        max=40,
+        step=1,
+        value=0,
+        marks={i: str(i) for i in range(-40, 41, 5)}
+    ),
+
+    html.Label("Kp (wzmocnienie):"),
+    dcc.Slider(
+        id='kp-slider',
+        min=0,
+        max=10,
+        step=0.1,
+        value=6,
+        marks={i: str(i) for i in range(0, 11)}
+    ),
+
+    html.Label("Ti (czas zdwojenia):"),
+    dcc.Slider(
+        id='ti-slider',
+        min=1,
+        max=100,
+        step=1,
+        value=14,
+        marks={i: str(i) for i in range(0, 101, 10)}
+    ),
+
+    html.Label("Td (czas różniczkowania):"),
+    dcc.Slider(
+        id='td-slider',
+        min=0,
+        max=10,
+        step=0.1,
+        value=5,
+        marks={i: str(i) for i in range(0, 11)}
+    ),
+
+    html.Label("Liczba osób w windzie (1 osoba = 70kg):"),
+    dcc.Slider(
+        id='people-slider',
+        min=0,
         max=20,
         step=1,
         value=0,
-        marks={i: str(i) for i in range(-40, 40, 5)}
+        marks={i: str(i) for i in range(0, 21)}
+    ),
+
+    html.Label("Ciężar pustej windy (kg):"),
+    dcc.Slider(
+        id='empty-weight-slider',
+        min=100,
+        max=1000,
+        step=10,
+        value=500,
+        marks={i: str(i) for i in range(100, 1001, 100)}
     ),
 
     dcc.Graph(id='height-plot'),
@@ -42,18 +86,31 @@ app.layout = html.Div([
     [Output('omega-plot', 'figure'),
      Output('acc-plot', 'figure'),
      Output('height-plot', 'figure'),
-     Output('current-plot', 'figure')],
-    [Input('uz-slider', 'value')]
+     Output('current-plot', 'figure'),
+     Output('current-values', 'children')],
+    [Input('uz-slider', 'value'),
+     Input('kp-slider', 'value'),
+     Input('ti-slider', 'value'),
+     Input('td-slider', 'value'),
+     Input('people-slider', 'value'),
+     Input('empty-weight-slider', 'value')]
 )
-def update_simulation(Uz):
+def update_simulation(Uz, kp, ti, td, people, empty_weight):
 
     omega_values = []
     acc_values = []
     height_values = []
     time = []
     current_values = []
+
     equations.reset_simulation()
+
     variable.H_requested = Uz
+    variable.Kp = kp
+    variable.Ti = ti
+    variable.Td = td
+    const.M_w = empty_weight
+    variable.M_l = people * 70
 
     for i in range(steps):
         u_regulator = regulator_PID.PID_new_current()
@@ -66,7 +123,6 @@ def update_simulation(Uz):
         height_values.append(variable.H_p)
         current_values.append(variable.U_z)
 
-    # Tworzenie wykresów
     omega_fig = go.Figure()
     omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega (rad/s)'))
     omega_fig.update_layout(title='Prędkość kątowa w czasie', xaxis_title='Czas (s)', yaxis_title='Omega (rad/s)')
@@ -84,7 +140,18 @@ def update_simulation(Uz):
     current_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas (s)', yaxis_title='Napiecie (V)')
 
     equations.is_simulation_realistic()
-    return omega_fig, acc_fig, height_fig, current_fig
+
+    current_vals_text = html.Div([
+        html.H3(f"Aktualne parametry:"),
+        html.P(f"Wysokość zadana: {Uz} m"),
+        html.P(f"Kp: {kp}"),
+        html.P(f"Ti: {ti}"),
+        html.P(f"Td: {td}"),
+        html.P(f"Liczba osób: {people}"),
+        html.P(f"Ciężar pustej windy: {empty_weight} kg")
+    ])
+
+    return omega_fig, acc_fig, height_fig, current_fig, current_vals_text
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -11,6 +11,6 @@ H_requested = 0 # wysokość zadana
 #Regulator PI
 sum_e = 0 # suma uchybów
 e_prev = 0  # poprzedni uchyb
-Kp = 5 # wzmocnienie regulatora
-Ti = 10 # czas zdwojenia
-Td = 1.5   # czas różniczkowania
+Kp = 2 # wzmocnienie regulatora
+Ti = 16 # czas zdwojenia
+Td = 2   # czas różniczkowania

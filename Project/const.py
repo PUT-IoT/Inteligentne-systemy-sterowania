@@ -1,5 +1,5 @@
 R = 0.2 # promień kołowrotka (m)
-M_w = 700 # masa pustej windy (tara masy windy) (kg)
+M_w = 500 # masa pustej windy (tara masy windy) (kg)
 M_pw = 600 # masa przeciwwagi (kg)
 G = 9.81 # przyspieszenie ziemskie (m/s^2)
 M_wir = 20 # masa wirnika (kg)
