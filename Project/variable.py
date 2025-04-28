@@ -14,3 +14,16 @@ Kp = 3 # wzmocnienie regulatora 0.25 - 0.5
 Ti = 80 # czas zdwojenia 2-5
 Td = 1.5
 e_prev = 0
+
+#Regulator PI rozmyty
+BDU = 0 # bardzo duzy ujemny
+DU =  0 # duzy ujemny
+SU = 0 # sredni ujemny
+MU = 0 # maly ujemny
+Z = 0 # okolo zera
+MD = 0 # maly dodatni
+SD = 0 # sredni dodatni
+DD = 0 # duzy dodatni
+BDD = 0 # bardzo duzy dodatni
+
+aff = 2 # przynależność

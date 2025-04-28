@@ -13,7 +13,7 @@ app = Dash(__name__)
 
 app.layout = html.Div([
     html.H1("Symulacja silnika – sterowanie napięciem"),
-
+    html.H2("Zmienne w układzie:"),
     html.Label("Wysokość zadana H (m):"),
     dcc.Slider(
         id='uz-slider',
@@ -32,6 +32,8 @@ app.layout = html.Div([
         value=0,
         marks={i: str(i) for i in range(0, 201, 10)}
     ),
+
+    html.H2("Parametry regulatora klasycznego:"),
     html.Label("Wzmocnienie regulatora - Kp:"),
     dcc.Slider(
         id='kp-slider',
@@ -60,6 +62,102 @@ app.layout = html.Div([
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
 
+    html.H2("Parametry regulatora rozmytego PI:"),
+    # html.Label("Regulator PI rozmyty - wartość bardzo duzy ujemny:"),
+    # dcc.Slider(
+    #     id='bdu-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość duzy ujemny:"),
+    # dcc.Slider(
+    #     id='du-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość średni ujemny:"),
+    # dcc.Slider(
+    #     id='su-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość mały ujemny:"),
+    # dcc.Slider(
+    #     id='mu-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość około zera:"),
+    # dcc.Slider(
+    #     id='z-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość mały dodatni:"),
+    # dcc.Slider(
+    #     id='md-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość średni dodatni:"),
+    # dcc.Slider(
+    #     id='sd-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość duzy dodatni:"),
+    # dcc.Slider(
+    #     id='dd-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+    # html.Label("Regulator PI rozmyty - wartość bardzo duzy dodatni:"),
+    # dcc.Slider(
+    #     id='bdd-slider',
+    #     min=-10,
+    #     max=10,
+    #     step=0.25,
+    #     value=2,
+    #     marks={i: str(i) for i in range(-10, 11, 1)}
+    # ),
+
+    html.Label("Regulator PI rozmyty - wartość przynależności trójkąta:"),
+    dcc.Slider(
+        id='affiliation-slider',
+        min=0,
+        max=10,
+        step=0.25,
+        value=2,
+        marks={i: str(i) for i in range(0, 11, 1)}
+    ),
+
+
+
+
     dcc.Graph(id='height-plot'),
     dcc.Graph(id='omega-plot'),
     dcc.Graph(id='acc-plot'),
@@ -72,12 +170,26 @@ app.layout = html.Div([
      Output('height-plot', 'figure'),
      Output('current-plot', 'figure')],
     [Input('uz-slider', 'value'),
+     Input('ml-slider', 'value'),
+
      Input('kp-slider', 'value'),
      Input('ti-slider', 'value'),
      Input('td-slider', 'value'),
-     Input('ml-slider', 'value'),]
+
+    # Input('bdu-slider', 'value'),
+    # Input('du-slider', 'value'),
+    # Input('su-slider', 'value'),
+    # Input('mu-slider', 'value'),
+    # Input('z-slider', 'value'),
+    # Input('md-slider', 'value'),
+    # Input('sd-slider', 'value'),
+    # Input('dd-slider', 'value'),
+    # Input('bdd-slider', 'value'),
+
+    Input('affiliation-slider', 'value'),]
 )
-def update_simulation(Uz, Kp, Ti, Td, M_l):
+# def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, aff):
+def update_simulation(Uz, M_l, Kp, Ti, Td, aff):
 
     omega_values = []
     acc_values = []
@@ -85,16 +197,23 @@ def update_simulation(Uz, Kp, Ti, Td, M_l):
     time = []
     current_values = []
     equations.reset_simulation()
-    if variable.H_requested != Uz:
-        variable.H_requested = Uz
-    if variable.Kp != Kp:
-        variable.Kp = Kp
-    if variable.Ti != Ti:
-        variable.Ti = Ti
-    if variable.Td != Td:
-        variable.Td = Td
-    if variable.M_l != M_l:
-        variable.M_l = M_l
+    variable.H_requested = Uz
+    variable.M_l = M_l
+
+    variable.Kp = Kp
+    variable.Ti = Ti
+    variable.Td = Td
+
+    # variable.BDU = BDU
+    # variable.DU = DU
+    # variable.SU = SU
+    # variable.MU = MU
+    # variable.Z = Z
+    # variable.MD = MD
+    # variable.SD = SD
+    # variable.DD = DD
+    # variable.BDD = BDD
+    variable.aff = aff
 
     for i in range(steps):
         u_regulator = regulator_PI.PI_new_current()
