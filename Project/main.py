@@ -4,7 +4,7 @@ from dash import Dash, dcc, html, Input, Output
 import const
 import equations
 import variable
-import regulator_PI
+import regulator_PID
 
 steps = int(const.T_s / const.T_p)
 
@@ -28,7 +28,7 @@ app.layout = html.Div([
         min=-40,
         max=40,
         step=1,
-        value=5,
+        value=0,
         marks={i: str(i) for i in range(-40, 40, 5)}
     ),
 
@@ -56,8 +56,8 @@ def update_simulation(Uz):
     variable.H_requested = Uz
 
     for i in range(steps):
-        u_regulator = regulator_PI.PI_new_current()
-        u = regulator_PI.rescale_u(u_regulator)
+        u_regulator = regulator_PID.PID_new_current()
+        u = regulator_PID.rescale_u(u_regulator)
         equations.simulation_step(u)
 
         time.append(i * const.T_p)

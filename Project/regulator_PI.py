@@ -1,7 +1,7 @@
 import variable
 import const
 def PI_new_current():
-    e = variable.H_requested - variable.H_p
+    e = -(variable.H_requested - variable.H_p)
     variable.sum_e += e
 
     uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e)
