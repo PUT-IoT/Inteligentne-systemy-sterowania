@@ -12,24 +12,52 @@ steps = int(const.T_s / const.T_p)
 app = Dash(__name__)
 
 app.layout = html.Div([
-    html.H1("Symulacja silnika – sterowanie napięciem (?)"),
-    # html.Label("Napięcie Uz (V):"),
-    # dcc.Slider(
-    #     id='uz-slider',
-    #     min=-120,
-    #     max=120,
-    #     step=5,
-    #     value=5,
-    #     marks={i: str(i) for i in range(-120, 121, 5)}
-    # ),
+    html.H1("Symulacja silnika – sterowanie napięciem"),
+
     html.Label("Wysokość zadana H (m):"),
     dcc.Slider(
         id='uz-slider',
-        min=-40,
+        min=0,
         max=40,
         step=1,
         value=5,
-        marks={i: str(i) for i in range(-40, 40, 5)}
+        marks={i: str(i) for i in range(0, 41, 1)}
+    ),
+    html.Label("Masa ludzi - tara windy (kg):"),
+    dcc.Slider(
+        id='ml-slider',
+        min=0,
+        max=200,
+        step=10,
+        value=0,
+        marks={i: str(i) for i in range(0, 201, 10)}
+    ),
+    html.Label("Wzmocnienie regulatora - Kp:"),
+    dcc.Slider(
+        id='kp-slider',
+        min=0,
+        max=40,
+        step=0.25,
+        value=2,
+        marks={i: str(i) for i in range(0, 41, 1)}
+    ),
+    html.Label("Czas zdwojenia - Ti:"),
+    dcc.Slider(
+        id='ti-slider',
+        min=0,
+        max=100,
+        step=5,
+        value=80,
+        marks={i: str(i) for i in range(0, 101, 5)}
+    ),
+    html.Label("Czas rozniczkowania - Td (0 dla regulatora PI):"),
+    dcc.Slider(
+        id='td-slider',
+        min=0,
+        max=40,
+        step=1,
+        value=2,
+        marks={i: str(i) for i in range(0, 41, 1)}
     ),
 
     dcc.Graph(id='height-plot'),
@@ -43,9 +71,13 @@ app.layout = html.Div([
      Output('acc-plot', 'figure'),
      Output('height-plot', 'figure'),
      Output('current-plot', 'figure')],
-    [Input('uz-slider', 'value')]
+    [Input('uz-slider', 'value'),
+     Input('kp-slider', 'value'),
+     Input('ti-slider', 'value'),
+     Input('td-slider', 'value'),
+     Input('ml-slider', 'value'),]
 )
-def update_simulation(Uz):
+def update_simulation(Uz, Kp, Ti, Td, M_l):
 
     omega_values = []
     acc_values = []
@@ -53,7 +85,16 @@ def update_simulation(Uz):
     time = []
     current_values = []
     equations.reset_simulation()
-    variable.H_requested = Uz
+    if variable.H_requested != Uz:
+        variable.H_requested = Uz
+    if variable.Kp != Kp:
+        variable.Kp = Kp
+    if variable.Ti != Ti:
+        variable.Ti = Ti
+    if variable.Td != Td:
+        variable.Td = Td
+    if variable.M_l != M_l:
+        variable.M_l = M_l
 
     for i in range(steps):
         u_regulator = regulator_PI.PI_new_current()

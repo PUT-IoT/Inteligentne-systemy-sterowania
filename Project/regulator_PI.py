@@ -1,10 +1,16 @@
 import variable
 import const
 def PI_new_current():
-    e = variable.H_requested - variable.H_p
+    e = -(variable.H_requested - variable.H_p)
     variable.sum_e += e
 
-    uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e)
+    # uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e)
+    # Pochodna uchybu do części D
+    de = (e - variable.e_prev) / const.T_p
+    variable.e_prev = e  # zapamiętaj obecny błąd dla kolejnego kroku
+
+    # Wyznacz sygnał PID
+    uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e + variable.Td * de)
     u = min(const.U_max_pi, max(const.U_min_pi, uPI))
     return u
 

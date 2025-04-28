@@ -10,7 +10,6 @@ def calculate_new_A():
     )
 
     part_4 = const.M_wir / 2 - (const.M_w + variable.M_l + const.M_pw)
-
     return part_3 / part_4
 
 def calculate_new_V_p():

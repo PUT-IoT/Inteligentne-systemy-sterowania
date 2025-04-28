@@ -10,5 +10,7 @@ H_requested = 0 # wysokość zadana
 
 #Regulator PI
 sum_e = 0 # suma uchybów
-Kp = 1 # wzmocnienie regulatora
-Ti = 1 # czas zdwojenia
+Kp = 3 # wzmocnienie regulatora 0.25 - 0.5
+Ti = 80 # czas zdwojenia 2-5
+Td = 1.5
+e_prev = 0
