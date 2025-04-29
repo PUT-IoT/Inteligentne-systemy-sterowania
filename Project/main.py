@@ -40,7 +40,7 @@ app.layout = html.Div([
         min=0,
         max=40,
         step=0.25,
-        value=2,
+        value=6,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
     html.Label("Czas zdwojenia - Ti:"),
@@ -49,7 +49,7 @@ app.layout = html.Div([
         min=0,
         max=100,
         step=5,
-        value=80,
+        value=15,
         marks={i: str(i) for i in range(0, 101, 5)}
     ),
     html.Label("Czas rozniczkowania - Td (0 dla regulatora PI):"),
@@ -58,7 +58,7 @@ app.layout = html.Div([
         min=0,
         max=40,
         step=1,
-        value=2,
+        value=8,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
 
@@ -188,8 +188,8 @@ app.layout = html.Div([
 
     Input('affiliation-slider', 'value'),]
 )
-# def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, aff):
-def update_simulation(Uz, M_l, Kp, Ti, Td, aff):
+# def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
+def update_simulation(Uz, M_l, Kp, Ti, Td, e_aff):
 
     omega_values = []
     acc_values = []
@@ -213,7 +213,7 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, aff):
     # variable.SD = SD
     # variable.DD = DD
     # variable.BDD = BDD
-    variable.aff = aff
+    variable.e_aff = e_aff
 
     for i in range(steps):
         u_regulator = regulator_PI.PI_new_current()
