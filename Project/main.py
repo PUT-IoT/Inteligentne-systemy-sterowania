@@ -56,9 +56,9 @@ app.layout = html.Div([
     dcc.Slider(
         id='td-slider',
         min=0,
-        max=40,
-        step=1,
-        value=8,
+        max=5,
+        step=0.1,
+        value=0.25,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
 
