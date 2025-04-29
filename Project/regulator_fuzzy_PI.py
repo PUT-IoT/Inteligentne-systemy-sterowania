@@ -54,6 +54,35 @@ def regulator_fuzzy():
         ('DD', 'DU'): 'Z', ('DD', 'SU'): 'MD', ('DD', 'MU'): 'SD', ('DD', 'Z'): 'DD', ('DD', 'MD'): 'BDD', ('DD', 'SD'): 'BDD', ('DD', 'DD'): 'BDD' 
     }
 
+    output_mapping = {
+        'BDU': variable.BDU,
+        'DU': variable.DU,
+        'SU': variable.SU,
+        'MU': variable.MU,
+        'Z': variable.Z,
+        'MD': variable.MD,
+        'SD': variable.SD,
+        'DD': variable.DD,
+        'BDD': variable.BDD
+    }
+
+
+    # Wnioskowanie - cd.
+
+    aggregated_output = {label: 0 for label in output_mapping}
+
+    for e_key, e_mu in e_values.items():
+        for ce_key, ce_mu in ce_values.items():
+            if e_mu > 0 and ce_mu > 0:
+                # Operator T-normy -> MIN
+                strength = min(e_mu, ce_mu)
+                rule_lable = rule_base.get((e_key, ce_key))
+                aggregated_output[rule_lable] = max(aggregated_output[rule_lable], strength) # operator S-normy -> MAX
+                
+
+    # TODO
+    # Wysotrzanie
+
     if e == 2 and ce == 4:
         # u = ...
         pass
