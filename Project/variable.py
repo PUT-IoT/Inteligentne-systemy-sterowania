@@ -26,4 +26,5 @@ SD = 0 # sredni dodatni
 DD = 0 # duzy dodatni
 BDD = 0 # bardzo duzy dodatni
 
-aff = 2 # przynależność
+e_aff = 2 # przynależność uchybu
+ce_aff = 1 # przynależność
