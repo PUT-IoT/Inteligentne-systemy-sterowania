@@ -1,6 +1,6 @@
 import variable
 import const
-def PI_new_current():
+def PD_new_current():
     e = -(variable.H_requested - variable.H_p)
     variable.sum_e += e
 
@@ -9,9 +9,9 @@ def PI_new_current():
     de = (e - variable.e_prev) / const.T_p
     variable.e_prev = e  # zapamiętaj obecny błąd dla kolejnego kroku
 
-    # Wyznacz sygnał PID
-    uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e + (variable.Td / const.T_p) * de)
-    u = min(const.U_max_pi, max(const.U_min_pi, uPI))
+    # Wyznacz sygnał PD
+    uPD = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e + (variable.Td / const.T_p) * de)
+    u = min(const.U_max_pi, max(const.U_min_pi, uPD))
     return u
 
 def rescale_u(u):

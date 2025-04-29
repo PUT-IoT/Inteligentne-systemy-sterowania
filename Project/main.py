@@ -4,7 +4,7 @@ from dash import Dash, dcc, html, Input, Output
 import const
 import equations
 import variable
-import regulator_PI
+import regulator_PD
 
 steps = int(const.T_s / const.T_p)
 
@@ -43,16 +43,7 @@ app.layout = html.Div([
         value=6,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
-    html.Label("Czas zdwojenia - Ti:"),
-    dcc.Slider(
-        id='ti-slider',
-        min=0,
-        max=100,
-        step=5,
-        value=15,
-        marks={i: str(i) for i in range(0, 101, 5)}
-    ),
-    html.Label("Czas rozniczkowania - Td (0 dla regulatora PI):"),
+    html.Label("Czas rozniczkowania - Td (0 dla regulatora PD):"),
     dcc.Slider(
         id='td-slider',
         min=0,
@@ -62,7 +53,7 @@ app.layout = html.Div([
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
 
-    html.H2("Parametry regulatora rozmytego PI:"),
+    html.H2("Parametry regulatora rozmytego PD:"),
     # html.Label("Regulator PI rozmyty - wartość bardzo duzy ujemny:"),
     # dcc.Slider(
     #     id='bdu-slider',
@@ -145,7 +136,7 @@ app.layout = html.Div([
     #     marks={i: str(i) for i in range(-10, 11, 1)}
     # ),
 
-    html.Label("Regulator PI rozmyty - wartość przynależności trójkąta:"),
+    html.Label("Regulator PD rozmyty - wartość przynależności trójkąta:"),
     dcc.Slider(
         id='affiliation-slider',
         min=0,
@@ -173,7 +164,6 @@ app.layout = html.Div([
      Input('ml-slider', 'value'),
 
      Input('kp-slider', 'value'),
-     Input('ti-slider', 'value'),
      Input('td-slider', 'value'),
 
     # Input('bdu-slider', 'value'),
@@ -189,7 +179,7 @@ app.layout = html.Div([
     Input('affiliation-slider', 'value'),]
 )
 # def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
-def update_simulation(Uz, M_l, Kp, Ti, Td, e_aff):
+def update_simulation(Uz, M_l, Kp, Td, e_aff):
 
     omega_values = []
     acc_values = []
@@ -201,7 +191,6 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, e_aff):
     variable.M_l = M_l
 
     variable.Kp = Kp
-    variable.Ti = Ti
     variable.Td = Td
 
     # variable.BDU = BDU
@@ -215,9 +204,9 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, e_aff):
     # variable.BDD = BDD
     variable.e_aff = e_aff
 
-    for i in range(steps):
-        u_regulator = regulator_PI.PI_new_current()
-        u = regulator_PI.rescale_u(u_regulator)
+    for i in range(steps):  
+        u_regulator = regulator_PD.PD_new_current()
+        u = regulator_PD.rescale_u(u_regulator)
         equations.simulation_step(u)
 
         time.append(i * const.T_p)
