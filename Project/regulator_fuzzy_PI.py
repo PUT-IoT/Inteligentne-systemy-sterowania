@@ -5,17 +5,48 @@ def affiliation_function(x, tri_num, aff):
     b = aff * tri_num / 2
     a = b - aff / 2
     c = b + aff / 2
-    return max(min(x-a/b-a, c-x/c-b), 0)
+    return max(min((x-a)/(b-a), (c-x)/(c-b)), 0)
 
-def right_sigm_function(x):
-    b = variable.aff * 3 / 2
-    a = b - variable.aff / 2
+def affiliation_function_left(x, aff):
+    b = aff * -3 / 2
+    c = b + aff / 2
+    return max(min(1, (c - x) / (c - b)), 0)
+
+def affiliation_function_right(x, aff):
+    b = aff * 3 / 2
+    a = b - aff / 2
+    return max(min((x-a)/(b-a), 1), 0)
+
+def right_sigm_function(x, aff):
+    b = aff * 3 / 2
+    a = b - aff / 2
     return 1/(1 + math.e **(a*b-a*x))
 
-def left_sigm_function(x):
-    b = variable.aff * (-3) / 2
-    a = b - variable.aff / 2
+def left_sigm_function(x, aff):
+    b = aff * (-3) / 2
+    a = b - aff / 2
     return math.e **(a*b-a*x)/(1 + math.e **(a*b-a*x))
+
+def defuzzify(aggregated_output, output_mapping, aff):
+    min_x = -4 * aff  # lub dopasuj do swoich danych
+    max_x = 4 * aff
+    step = 0.01
+    x_values = [min_x + i * step for i in range(int((max_x - min_x) / step))]
+
+    numerator = 0
+    denominator = 0
+
+    for x in x_values:
+        mu_total = 0
+        for label, strength in aggregated_output.items():
+            center = output_mapping[label]
+            mu = affiliation_function(x, center / aff, aff)  # tri_num = center / aff
+            mu_total = max(mu_total, mu * strength)
+
+        numerator += x * mu_total
+        denominator += mu_total
+
+    return numerator / denominator if denominator != 0 else 0
 
 def regulator_fuzzy():
     e = -(variable.H_requested - variable.H_p)
@@ -24,23 +55,23 @@ def regulator_fuzzy():
 
     # Rozmywanie
     e_values = {
-        'DU' : left_sigm_function(e),
+        'DU' : affiliation_function_left(e, variable.e_aff),
         'SU' : affiliation_function(e, -2, variable.e_aff),
         'MU' : affiliation_function(e, -1, variable.e_aff),
         'Z' : affiliation_function(e, 0, variable.e_aff),
         'MD' : affiliation_function(e, 1, variable.e_aff),
         'SD' : affiliation_function(e, 2, variable.e_aff),
-        'DD' : right_sigm_function(e)
+        'DD' : affiliation_function_right(e, variable.e_aff)
     }
 
     ce_values = {
-        'DU' : left_sigm_function(ce),
+        'DU' : affiliation_function_left(ce, variable.ce_aff),
         'SU' : affiliation_function(ce, -2, variable.ce_aff),
         'MU' : affiliation_function(ce, -1, variable.ce_aff),
         'Z' : affiliation_function(ce, 0, variable.ce_aff),
         'MD' : affiliation_function(ce, 1, variable.ce_aff),
         'SD' : affiliation_function(ce, 2, variable.ce_aff),
-        'DD' : right_sigm_function(ce)
+        'DD' : affiliation_function_right(ce, variable.ce_aff)
     }
 
     # Wnioskowanie - baza reguł
@@ -49,7 +80,7 @@ def regulator_fuzzy():
         ('SU', 'DU'): 'BDU', ('SU', 'SU'): 'BDU', ('SU', 'MU'): 'DU', ('SU', 'Z'): 'SU', ('SU', 'MD'): 'MU', ('SU', 'SD'): 'Z', ('SU', 'DD'): 'MD',
         ('MU', 'DU'): 'BDU', ('MU', 'SU'): 'DU', ('MU', 'MU'): 'SU', ('MU', 'Z'): 'MU', ('MU', 'MD'): 'Z', ('MU', 'SD'): 'MD', ('MU', 'DD'): 'SD',
         ('Z', 'DU'): 'DU', ('Z', 'SU'): 'SU', ('Z', 'MU'): 'MU', ('Z', 'Z'): 'Z', ('Z', 'MD'): 'MD', ('Z', 'SD'): 'SD', ('Z', 'DD'): 'DD',
-        ('MD', 'DU'): 'SU', ('MD', 'SU'): 'MU', ('MD', 'MU'): 'Z', ('MD', 'MD'): 'SD', ('MD', 'SD'): 'DD', ('MD', 'DD'): 'BDD',
+        ('MD', 'DU'): 'SU', ('MD', 'SU'): 'MU', ('MD', 'MU'): 'Z', ('MD', 'Z'): 'MD', ('MD', 'MD'): 'SD', ('MD', 'SD'): 'DD', ('MD', 'DD'): 'BDD',
         ('SD', 'DU'): 'MU', ('SD', 'SU'): 'Z', ('SD', 'MU'): 'MD', ('SD', 'Z'): 'SD', ('SD', 'MD'): 'DD', ('SD', 'SD'): 'BDD', ('SD', 'DD'): 'BDD',
         ('DD', 'DU'): 'Z', ('DD', 'SU'): 'MD', ('DD', 'MU'): 'SD', ('DD', 'Z'): 'DD', ('DD', 'MD'): 'BDD', ('DD', 'SD'): 'BDD', ('DD', 'DD'): 'BDD' 
     }
@@ -77,12 +108,15 @@ def regulator_fuzzy():
                 # Operator T-normy -> MIN
                 strength = min(e_mu, ce_mu)
                 rule_lable = rule_base.get((e_key, ce_key))
-                aggregated_output[rule_lable] = max(aggregated_output[rule_lable], strength) # operator S-normy -> MAX
+                # # operator S-normy -> MAX
+                # print("e_key: " + str(e_key))
+                # print("ce_key: " + str(ce_key))
+                # print("rule_lable: "+str(rule_lable))
+                # print("aggregated_output[rule_lable]: "+str(aggregated_output[rule_lable]))
+                aggregated_output[rule_lable] = max(aggregated_output[rule_lable], strength)
                 
 
     # TODO
     # Wysotrzanie
-
-    if e == 2 and ce == 4:
-        # u = ...
-        pass
+    output = defuzzify(aggregated_output, output_mapping, variable.output_aff)
+    return output
