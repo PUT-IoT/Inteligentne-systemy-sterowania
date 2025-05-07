@@ -16,15 +16,15 @@ Td = 1.5
 e_prev = 0
 
 #Regulator PI rozmyty
-BDU = 10 # bardzo duzy ujemny
-DU =  8 # duzy ujemny
-SU = 4 # sredni ujemny
-MU = 2 # maly ujemny
+BDU = 0 # bardzo duzy ujemny
+DU =  0 # duzy ujemny
+SU = 0 # sredni ujemny
+MU = 0 # maly ujemny
 Z = 0 # okolo zera
-MD = -2 # maly dodatni
-SD = 4 # sredni dodatni
-DD = 8 # duzy dodatni
-BDD = 10 # bardzo duzy dodatni
+MD = 0 # maly dodatni
+SD = 0 # sredni dodatni
+DD = 0 # duzy dodatni
+BDD = 0 # bardzo duzy dodatni
 
 e_aff = 2 # przynależność uchybu
 ce_aff = 1 # przynależność

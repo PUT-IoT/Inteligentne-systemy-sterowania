@@ -1,5 +1,5 @@
 import math
-
+import const
 import variable
 def affiliation_function(x, tri_num, aff):
     b = aff * tri_num / 2
@@ -120,3 +120,7 @@ def regulator_fuzzy():
     # Wysotrzanie
     output = defuzzify(aggregated_output, output_mapping, variable.output_aff)
     return output
+
+def rescale_u(u):
+    new_u = const.U_min + (const.U_max - const.U_min) * (u - const.U_min_pi_fuzzy) / (const.U_max_pi_fuzzy - const.U_min_pi_fuzzy)
+    return new_u

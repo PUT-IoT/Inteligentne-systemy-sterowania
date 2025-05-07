@@ -57,83 +57,83 @@ app.layout = html.Div([
     html.Label("Regulator PI rozmyty - wartość bardzo duzy ujemny:"),
     dcc.Slider(
         id='bdu-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość duzy ujemny:"),
     dcc.Slider(
         id='du-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.1,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość średni ujemny:"),
     dcc.Slider(
         id='su-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.3,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość mały ujemny:"),
     dcc.Slider(
         id='mu-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.45,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość około zera:"),
     dcc.Slider(
         id='z-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.5,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość mały dodatni:"),
     dcc.Slider(
         id='md-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.55,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość średni dodatni:"),
     dcc.Slider(
         id='sd-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.7,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość duzy dodatni:"),
     dcc.Slider(
         id='dd-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=0.9,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość bardzo duzy dodatni:"),
     dcc.Slider(
         id='bdd-slider',
-        min=-10,
-        max=10,
-        step=0.25,
-        value=2,
-        marks={i: str(i) for i in range(-10, 11, 1)}
+        min=0,
+        max=1,
+        step=0.01,
+        value=1,
+        marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
 
     html.Label("Regulator PD rozmyty - wartość przynależności trójkąta:"),
@@ -230,7 +230,7 @@ def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_af
 
     for i in range(steps):
         u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
-        u = regulator_PD.rescale_u(u_regulator)
+        u = regulator_fuzzy_PI.rescale_u(u_regulator)
         equations.simulation_step(u)
 
         fuzzy.append(u_regulator)
