@@ -49,7 +49,7 @@ def defuzzify(aggregated_output, output_mapping, aff):
     return numerator / denominator if denominator != 0 else 0
 
 def regulator_fuzzy():
-    e = -(variable.H_requested - variable.H_p)
+    e = variable.H_requested - variable.H_p
     ce = (e - variable.e_prev)
     variable.e_prev = e
 
@@ -85,16 +85,27 @@ def regulator_fuzzy():
         ('DD', 'DU'): 'Z', ('DD', 'SU'): 'MD', ('DD', 'MU'): 'SD', ('DD', 'Z'): 'DD', ('DD', 'MD'): 'BDD', ('DD', 'SD'): 'BDD', ('DD', 'DD'): 'BDD' 
     }
 
+    # output_mapping = {
+    #     'BDU': variable.BDU,
+    #     'DU': variable.DU,
+    #     'SU': variable.SU,
+    #     'MU': variable.MU,
+    #     'Z': variable.Z,
+    #     'MD': variable.MD,
+    #     'SD': variable.SD,
+    #     'DD': variable.DD,
+    #     'BDD': variable.BDD
+    # }
     output_mapping = {
-        'BDU': variable.BDU,
-        'DU': variable.DU,
-        'SU': variable.SU,
-        'MU': variable.MU,
-        'Z': variable.Z,
-        'MD': variable.MD,
-        'SD': variable.SD,
-        'DD': variable.DD,
-        'BDD': variable.BDD
+        'BDU': 10,
+        'DU': 1.8,
+        'SU': 1.4,
+        'MU': 1,
+        'Z': 0.5,
+        'MD': 1,
+        'SD': 1.4,
+        'DD': 1.8,
+        'BDD': 10
     }
 
 

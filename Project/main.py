@@ -60,7 +60,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0,
+        value=0.1,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość duzy ujemny:"),
@@ -69,7 +69,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.1,
+        value=0.2,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość średni ujemny:"),
@@ -78,7 +78,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.3,
+        value=0.4,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość mały ujemny:"),
@@ -87,7 +87,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.45,
+        value=0.6,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość około zera:"),
@@ -96,7 +96,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.5,
+        value=0.8,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość mały dodatni:"),
@@ -105,7 +105,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.55,
+        value=0.6,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość średni dodatni:"),
@@ -114,7 +114,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.7,
+        value=0.4,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość duzy dodatni:"),
@@ -123,7 +123,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=0.9,
+        value=0.2,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
     html.Label("Regulator PI rozmyty - wartość bardzo duzy dodatni:"),
@@ -132,7 +132,7 @@ app.layout = html.Div([
         min=0,
         max=1,
         step=0.01,
-        value=1,
+        value=0.1,
         marks={i: str(i) for i in [x / 10 for x in range(11)]}
     ),
 
