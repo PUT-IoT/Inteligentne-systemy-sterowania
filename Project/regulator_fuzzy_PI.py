@@ -82,7 +82,7 @@ def regulator_fuzzy():
         ('Z', 'DU'): 'DU', ('Z', 'SU'): 'SU', ('Z', 'MU'): 'MU', ('Z', 'Z'): 'Z', ('Z', 'MD'): 'MD', ('Z', 'SD'): 'SD', ('Z', 'DD'): 'DD',
         ('MD', 'DU'): 'SU', ('MD', 'SU'): 'MU', ('MD', 'MU'): 'Z', ('MD', 'Z'): 'MD', ('MD', 'MD'): 'SD', ('MD', 'SD'): 'DD', ('MD', 'DD'): 'BDD',
         ('SD', 'DU'): 'MU', ('SD', 'SU'): 'Z', ('SD', 'MU'): 'MD', ('SD', 'Z'): 'SD', ('SD', 'MD'): 'DD', ('SD', 'SD'): 'BDD', ('SD', 'DD'): 'BDD',
-        ('DD', 'DU'): 'Z', ('DD', 'SU'): 'MD', ('DD', 'MU'): 'SD', ('DD', 'Z'): 'DD', ('DD', 'MD'): 'BDD', ('DD', 'SD'): 'BDD', ('DD', 'DD'): 'BDD' 
+        ('DD', 'DU'): 'Z', ('DD', 'SU'): 'MD', ('DD', 'MU'): 'SD', ('DD', 'Z'): 'DD', ('DD', 'MD'): 'BDD', ('DD', 'SD'): 'BDD', ('DD', 'DD'): 'BDD'
     }
 
     # output_mapping = {
@@ -120,12 +120,8 @@ def regulator_fuzzy():
                 strength = min(e_mu, ce_mu)
                 rule_lable = rule_base.get((e_key, ce_key))
                 # # operator S-normy -> MAX
-                # print("e_key: " + str(e_key))
-                # print("ce_key: " + str(ce_key))
-                # print("rule_lable: "+str(rule_lable))
-                # print("aggregated_output[rule_lable]: "+str(aggregated_output[rule_lable]))
                 aggregated_output[rule_lable] = max(aggregated_output[rule_lable], strength)
-                
+
 
     # TODO
     # Wysotrzanie

@@ -270,5 +270,79 @@ def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_af
     height2_fig.update_layout(title='Wysokość w czasie dla rozmytego', xaxis_title='Czas (s)', yaxis_title='H (m)')
     return omega_fig, acc_fig, height_fig, current_fig, fuzzy_fig, fuzzy2_fig, height2_fig
 
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+def test_nauki(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
+# def update_simulation(Uz, M_l, Kp, Td, e_aff):
+
+    equations.reset_simulation()
+    variable.H_requested = Uz
+    variable.M_l = M_l
+
+    variable.Kp = Kp
+    variable.Td = Td
+
+    variable.BDU = BDU
+    variable.DU = DU
+    variable.SU = SU
+    variable.MU = MU
+    variable.Z = Z
+    variable.MD = MD
+    variable.SD = SD
+    variable.DD = DD
+    variable.BDD = BDD
+    variable.e_aff = e_aff
+
+    height_values2 = []
+    equations.reset_simulation()
+
+    for i in range(steps):
+        u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
+        u = regulator_fuzzy_PI.rescale_u(u_regulator)
+        equations.simulation_step(u)
+
+        height_values2.append(variable.H_p)
+        if i % 1000 == 0:
+            print(i/1000)
+
+    return height_values2
+
+import random
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    new_values = {
+        'BDU': 8.1,
+        'DU': 1.9,
+        'SU': 1.8,
+        'MU': 1.6,
+        'Z': 1.8,
+        'MD': 1.6,
+        'SD': 1.8,
+        'DD': 1.9,
+        'BDD': 8
+    }
+    best_values = new_values.copy()
+    best_score = float('inf')
+
+    try:
+        for x in range(100000):
+            # Losowa zmiana jednej wartości w new_values
+            key = random.choice(list(new_values.keys()))
+            # new_values[key] += random.uniform(-0.1, 0.1) * 0.1
+            new_values[key] += random.choice([0.1, -0.1])
+            height = test_nauki(Uz=5, M_l=0, Kp=6, Td=0.25, **new_values, e_aff=2)
+            current_score = sum(abs(variable.H_requested - height[-1*i-1]) for i in range(int(len(height) * 0.3)))
+
+            if current_score < best_score:
+                best_values = new_values.copy()
+                best_score = current_score
+                print(f'New best score: {best_score} with values: {best_values}')
+            else:
+                # Cofnięcie zmiany, jeśli wynik gorszy
+                new_values[key] = best_values[key]
+
+        print(f'Final best score: {best_score} with values: {best_values}')
+
+    except KeyboardInterrupt:
+        print(f'Interrupted. Best score so far: {best_score} with values: {best_values}')
