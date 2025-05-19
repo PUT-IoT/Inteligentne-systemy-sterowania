@@ -97,15 +97,15 @@ def regulator_fuzzy():
     #     'BDD': variable.BDD
     # }
     output_mapping = {
-        'BDU': 10,
-        'DU': 1.8,
-        'SU': 1.4,
-        'MU': 1,
-        'Z': 0.5,
-        'MD': 1,
-        'SD': 1.4,
-        'DD': 1.8,
-        'BDD': 10
+        'BDU': 8,
+        'DU': 1.9,
+        'SU': 1.8,
+        'MU': 1.6,
+        'Z': 1.8,
+        'MD': 1.6,
+        'SD': 1.8,
+        'DD': 1.9,
+        'BDD': 8
     }
 
 
