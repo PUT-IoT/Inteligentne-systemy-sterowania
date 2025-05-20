@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import const
 import variable
 def affiliation_function(x, tri_num, aff):
@@ -31,7 +32,8 @@ def defuzzify(aggregated_output, output_mapping, aff):
     min_x = -4 * aff  # lub dopasuj do swoich danych
     max_x = 4 * aff
     step = 0.01
-    x_values = [min_x + i * step for i in range(int((max_x - min_x) / step))]
+    # x_values = [min_x + i * step for i in range(int((max_x - min_x) / step))]
+    x_values = np.linspace(-100, 100, 200)
 
     numerator = 0
     denominator = 0

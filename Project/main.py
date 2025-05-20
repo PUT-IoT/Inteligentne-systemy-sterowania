@@ -38,19 +38,19 @@ app.layout = html.Div([
     dcc.Slider(
         id='kp-slider',
         min=0,
-        max=40,
+        max=50,
         step=0.25,
-        value=6,
-        marks={i: str(i) for i in range(0, 41, 1)}
+        value=40,
+        marks={i: str(i) for i in range(0, 51, 1)}
     ),
     html.Label("Czas rozniczkowania - Td (0 dla regulatora PD):"),
     dcc.Slider(
         id='td-slider',
         min=0,
-        max=5,
-        step=0.1,
-        value=0.25,
-        marks={i: str(i) for i in range(0, 41, 1)}
+        max=2,
+        step=0.05,
+        value=0.05,
+        marks={i: str(i) for i in [x / 10 for x in range(21)]}
     ),
 
     html.H2("Parametry regulatora rozmytego PD:"),
@@ -228,16 +228,16 @@ def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_af
     equations.reset_simulation()
 
 
-    for i in range(steps):
-        u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
-        u = regulator_fuzzy_PI.rescale_u(u_regulator)
-        equations.simulation_step(u)
+    # for i in range(steps):
+    #     u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
+    #     u = regulator_fuzzy_PI.rescale_u(u_regulator)
+    #     equations.simulation_step(u)
 
-        fuzzy.append(u_regulator)
-        fuzzy2.append(u)
-        height_values2.append(variable.H_p)
-        if i % 10 == 0:
-            print(i)
+    #     fuzzy.append(u_regulator)
+    #     fuzzy2.append(u)
+    #     height_values2.append(variable.H_p)
+    #     if i % 10 == 0:
+    #         print(i)
 
     # Tworzenie wykresów
     omega_fig = go.Figure()
