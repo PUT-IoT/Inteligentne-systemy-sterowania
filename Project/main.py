@@ -228,16 +228,16 @@ def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_af
     equations.reset_simulation()
 
 
-    # for i in range(steps):
-    #     u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
-    #     u = regulator_fuzzy_PI.rescale_u(u_regulator)
-    #     equations.simulation_step(u)
+    for i in range(steps):
+        u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
+        u = regulator_fuzzy_PI.rescale_u(u_regulator)
+        equations.simulation_step(u)
 
-    #     fuzzy.append(u_regulator)
-    #     fuzzy2.append(u)
-    #     height_values2.append(variable.H_p)
-    #     if i % 10 == 0:
-    #         print(i)
+        fuzzy.append(u_regulator)
+        fuzzy2.append(u)
+        height_values2.append(variable.H_p)
+        if i % 10 == 0:
+            print(i)
 
     # Tworzenie wykresów
     omega_fig = go.Figure()
@@ -330,7 +330,7 @@ if __name__ == '__main__':
 #             # Losowa zmiana jednej wartości w new_values
 #             key = random.choice(list(new_values.keys()))
 #             # new_values[key] += random.uniform(-0.1, 0.1) * 0.1
-#             new_values[key] += random.choice([0.5, -0.5])
+#             new_values[key] += random.choice([0.1, -0.1])
 #             height = test_nauki(Uz=5, M_l=0, Kp=6, Td=0.25, **new_values, e_aff=2)
 #             current_score = sum(abs(variable.H_requested - height[-1*i-1]) for i in range(int(len(height) * 0.3)))
 #

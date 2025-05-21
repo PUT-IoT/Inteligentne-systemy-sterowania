@@ -6,7 +6,7 @@ def PD_new_current():
 
     # uPI = variable.Kp * (e + (const.T_p / variable.Ti) * variable.sum_e)
     # Pochodna uchybu do części D
-    de = (e - variable.e_prev) / const.T_p
+    de = (e - variable.e_prev)
     variable.e_prev = e  # zapamiętaj obecny błąd dla kolejnego kroku
 
     # Wyznacz sygnał PD
