@@ -8,9 +8,12 @@ def PD_new_current():
     # Pochodna uchybu do części D
     de = (e - variable.e_prev)
     variable.e_prev = e  # zapamiętaj obecny błąd dla kolejnego kroku
-
+    # Część całkująca
+    cc = 0
+    if variable.Ti != 0 :
+        cc = const.T_p/variable.Ti * variable.sum_e
     # Wyznacz sygnał PD
-    uPD = variable.Kp * (e + (variable.Td / const.T_p) * de)
+    uPD = variable.Kp * (e + cc + (variable.Td / const.T_p) * de)
     u = min(const.U_max_pi, max(const.U_min_pi, uPD))
     return u
 

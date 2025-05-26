@@ -40,9 +40,9 @@ def reset_simulation():
 
     variable.H_requested = 0
     variable.sum_e = 0
-    # variable.Kp = 0
-    # variable.Ti = 0
-
+    variable.Kp = 0
+    variable.Ti = 0
+    variable.Td = 0
 # https://www.gmv.pl/wytyczne-elektryczne.html
 def is_simulation_realistic():
     ok = True

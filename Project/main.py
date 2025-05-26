@@ -20,7 +20,7 @@ app.layout = html.Div([
         min=0,
         max=40,
         step=1,
-        value=5,
+        value=1,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
     html.Label("Masa ludzi - tara windy (kg):"),
@@ -40,8 +40,18 @@ app.layout = html.Div([
         min=0,
         max=50,
         step=0.25,
-        value=40,
+        value=50,
         marks={i: str(i) for i in range(0, 51, 1)}
+    ),
+    html.Label("Ti – czas zdwojenia:"),
+    dcc.Slider(
+        id='ti-slider',
+        min=0,
+        max=10,
+        step=0.1,
+        value=10,
+        marks={i: str(i) for i in [x / 2 for x in range(101)]}
+        #marks = {round(i * 0.1, 1): str(round(i * 0.1, 1)) for i in range(0, 101)}
     ),
     html.Label("Czas rozniczkowania - Td (0 dla regulatora PD):"),
     dcc.Slider(
@@ -49,8 +59,8 @@ app.layout = html.Div([
         min=0,
         max=2,
         step=0.05,
-        value=0.05,
-        marks={i: str(i) for i in [x / 10 for x in range(21)]}
+        value=2,
+        marks={i: str(i) for i in [x / 2 for x in range(51)]}
     ),
 
     html.H2("Parametry regulatora rozmytego PD:"),
@@ -170,6 +180,7 @@ app.layout = html.Div([
      Input('ml-slider', 'value'),
 
      Input('kp-slider', 'value'),
+     Input('ti-slider', 'value'),
      Input('td-slider', 'value'),
 
     Input('bdu-slider', 'value'),
@@ -184,7 +195,7 @@ app.layout = html.Div([
 
     Input('affiliation-slider', 'value'),]
 )
-def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
+def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
 # def update_simulation(Uz, M_l, Kp, Td, e_aff):
 
     omega_values = []
@@ -197,6 +208,7 @@ def update_simulation(Uz, M_l, Kp, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_af
     variable.M_l = M_l
 
     variable.Kp = Kp
+    variable.Ti = Ti
     variable.Td = Td
 
     variable.BDU = BDU
