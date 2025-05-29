@@ -6,6 +6,7 @@ import equations
 import variable
 import regulator_PD
 import regulator_fuzzy_PI
+import regulator_fuzzy_PD
 steps = int(const.T_s / const.T_p)
 
 # apka Dash
@@ -241,15 +242,15 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
 
 
     for i in range(steps):
-        u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
-        u = regulator_fuzzy_PI.rescale_u(u_regulator)
+        u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
+        u = regulator_fuzzy_PD.rescale_u(u_regulator)
         equations.simulation_step(u)
 
         fuzzy.append(u_regulator)
         fuzzy2.append(u)
         height_values2.append(variable.H_p)
-        if i % 10 == 0:
-            print(i)
+        # if i % 10 == 0:
+            # print(i)
 
     # Tworzenie wykresów
     omega_fig = go.Figure()
