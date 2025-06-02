@@ -19,4 +19,4 @@ U_max_pi = 10 # minimalne napiecie z regulatora
 
 # Regulator PI rozmyty
 U_min_pi_fuzzy = 0 # maksymalne napiecie z regulatora
-U_max_pi_fuzzy = 1 # minimalne napiecie z regulatora
+U_max_pi_fuzzy = 100 # minimalne napiecie z regulatora

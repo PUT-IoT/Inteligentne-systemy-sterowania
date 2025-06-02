@@ -5,7 +5,7 @@ import const
 import equations
 import variable
 import regulator_PD
-import regulator_fuzzy_PI
+# import regulator_fuzzy_PI
 import regulator_fuzzy_PD
 steps = int(const.T_s / const.T_p)
 
@@ -204,6 +204,9 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
     height_values = []
     time = []
     current_values = []
+    requested_h_p = []
+    balance_voltage = []
+
     equations.reset_simulation()
     variable.H_requested = Uz
     variable.M_l = M_l
@@ -233,6 +236,7 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
         acc_values.append(variable.A)
         height_values.append(variable.H_p)
         current_values.append(variable.U_z)
+        requested_h_p.append(variable.H_requested)
 
 
     fuzzy = []
@@ -244,7 +248,12 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
     for i in range(steps):
         u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
         u = regulator_fuzzy_PD.rescale_u(u_regulator)
-        equations.simulation_step(u)
+        # By rozkład sił był równomierny należy kręcić kołowrotkiem niezależnie od uchybu
+        # Z tego powodu liczę jaki procent zajmujenapięcie potrzebne do zachowania równowagi a resztę przydzielam
+        balancing_voltage = variable.get_equilibrium_voltage()
+        balance_voltage.append(balancing_voltage)
+        balancing_voltage_percent = balancing_voltage / (abs(const.U_max) + abs(const.U_min) )
+        equations.simulation_step(balancing_voltage + u*(1-balancing_voltage_percent))
 
         fuzzy.append(u_regulator)
         fuzzy2.append(u)
@@ -262,11 +271,13 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
     acc_fig.update_layout(title='Przyspieszenie w czasie', xaxis_title='Czas (s)', yaxis_title='A (rad/s²)')
 
     height_fig = go.Figure()
-    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość (m)'))
+    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość windy w symulacji (m)'))
+    height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana (m)'))
     height_fig.update_layout(title='Wysokość w czasie', xaxis_title='Czas (s)', yaxis_title='H (m)')
 
     current_fig = go.Figure()
     current_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napiecie (V)'))
+    current_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi (V)'))
     current_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas (s)', yaxis_title='Napiecie (V)')
 
     fuzzy_fig = go.Figure()
@@ -276,11 +287,14 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
 
     fuzzy2_fig = go.Figure()
     fuzzy2_fig.add_trace(go.Scatter(x=time, y=fuzzy2, mode='lines', name='Napiecie (V)'))
+    fuzzy2_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi (V)'))
     fuzzy2_fig.update_layout(title='Napięcie w czasie z rozmytego', xaxis_title='Czas (s)', yaxis_title='Napiecie (V)')
 
     height2_fig = go.Figure()
-    height2_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość (m)'))
+    height2_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość windy w symulacji (m)'))
+    height2_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana (m)'))
     height2_fig.update_layout(title='Wysokość w czasie dla rozmytego', xaxis_title='Czas (s)', yaxis_title='H (m)')
+
     return omega_fig, acc_fig, height_fig, current_fig, fuzzy_fig, fuzzy2_fig, height2_fig
 
 if __name__ == '__main__':
@@ -310,10 +324,20 @@ if __name__ == '__main__':
 #     height_values2 = []
 #     equations.reset_simulation()
 #
+#     # for i in range(steps):
+#     #     u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
+#     #     u = regulator_fuzzy_PI.rescale_u(u_regulator)
+#     #     equations.simulation_step(u)
+#
+#
 #     for i in range(steps):
-#         u_regulator = regulator_fuzzy_PI.regulator_fuzzy()
-#         u = regulator_fuzzy_PI.rescale_u(u_regulator)
-#         equations.simulation_step(u)
+#         u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
+#         u = regulator_fuzzy_PD.rescale_u(u_regulator)
+#         # By rozkład sił był równomierny należy kręcić kołowrotkiem niezależnie od uchybu
+#         # Z tego powodu liczę jaki procent zajmujenapięcie potrzebne do zachowania równowagi a resztę przydzielam
+#         balancing_voltage = variable.get_equilibrium_voltage()
+#         balancing_voltage_percent = balancing_voltage / (abs(const.U_max) + abs(const.U_min))
+#         equations.simulation_step(balancing_voltage + u * (1 - balancing_voltage_percent))
 #
 #         height_values2.append(variable.H_p)
 #         if i % 1000 == 0:
@@ -335,6 +359,18 @@ if __name__ == '__main__':
 #         'DD': 1.8,
 #         'BDD': 8
 #     }
+#     # new_values = {
+#     #     'BDU': 0.5,
+#     #     'DU': 0.5,
+#     #     'SU': 0.435,
+#     #     'MU': 0.5,
+#     #     'Z': 0.4,
+#     #     'MD': 0.5,
+#     #     'SD': 0.5,
+#     #     'DD': 0.61,
+#     #     'BDD': 0.5
+#     # }
+#
 #     best_values = new_values.copy()
 #     best_score = float('inf')
 #
@@ -343,9 +379,10 @@ if __name__ == '__main__':
 #             # Losowa zmiana jednej wartości w new_values
 #             key = random.choice(list(new_values.keys()))
 #             # new_values[key] += random.uniform(-0.1, 0.1) * 0.1
-#             new_values[key] += random.choice([0.1, -0.1])
+#             new_values[key] += random.choice([0.01, -0.01, 0.005, -0.005])
+#             print(f'Key: {key}, Value: {new_values[key]}')
 #             height = test_nauki(Uz=5, M_l=0, Kp=6, Td=0.25, **new_values, e_aff=2)
-#             current_score = sum(abs(variable.H_requested - height[-1*i-1]) for i in range(int(len(height) * 0.3)))
+#             current_score = sum(abs(variable.H_requested - height[-1*i-1]) for i in range(int(len(height) * 0.7)))
 #
 #             if current_score < best_score:
 #                 best_values = new_values.copy()
@@ -354,8 +391,8 @@ if __name__ == '__main__':
 #             else:
 #                 # Cofnięcie zmiany, jeśli wynik gorszy
 #                 new_values[key] = best_values[key]
+#                 print(f'Current best score: {best_score}, Tried values: {best_values}, with score: {current_score}')
 #
 #         print(f'Final best score: {best_score} with values: {best_values}')
-#
-#     except KeyboardInterrupt:
+#     except:
 #         print(f'Interrupted. Best score so far: {best_score} with values: {best_values}')

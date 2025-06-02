@@ -78,7 +78,7 @@ control_system = ctrl.ControlSystem(rules)
 simulator = ctrl.ControlSystemSimulation(control_system, flush_after_run=100)
 
 def regulator_fuzzy_PD():
-    e_val = (variable.H_requested - variable.H_p)
+    e_val = -(variable.H_requested - variable.H_p)
     de_val = e_val - variable.e_prev
     variable.e_prev = e_val
 
@@ -87,10 +87,14 @@ def regulator_fuzzy_PD():
 
     try:
         simulator.compute()
-        return variable.get_equilibrium_voltage() + simulator.output['delta_u']
+        # print(simulator.output['delta_u'])
+        # return variable.get_equilibrium_voltage() + simulator.output['delta_u']
+        return simulator.output['delta_u']
+        # return variable.get_equilibrium_voltage()
     except:
         return variable.get_equilibrium_voltage()
 
 def rescale_u(u):
-    u = np.clip(u, const.U_min_pi, const.U_max_pi)
-    return const.U_min + (const.U_max - const.U_min) * (u - const.U_min_pi) / (const.U_max_pi - const.U_min_pi)
+    # u = np.clip(u, const.U_min_pi, const.U_max_pi)
+
+    return const.U_min + (const.U_max - const.U_min) * (u - const.U_min_pi_fuzzy) / (const.U_max_pi_fuzzy - const.U_min_pi_fuzzy)
