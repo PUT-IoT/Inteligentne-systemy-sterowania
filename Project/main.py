@@ -15,7 +15,7 @@ app = Dash(__name__)
 app.layout = html.Div([
     html.H1("Symulacja silnika – sterowanie napięciem"),
     html.H2("Zmienne w układzie:"),
-    html.Label("Wysokość zadana H (m):"),
+    html.Label("Wysokość zadana H [m]:"),
     dcc.Slider(
         id='uz-slider',
         min=0,
@@ -24,7 +24,7 @@ app.layout = html.Div([
         value=1,
         marks={i: str(i) for i in range(0, 41, 1)}
     ),
-    html.Label("Masa ludzi - tara windy (kg):"),
+    html.Label("Masa ludzi - netto windy [kg]:"),
     dcc.Slider(
         id='ml-slider',
         min=0,
@@ -41,26 +41,26 @@ app.layout = html.Div([
         min=0,
         max=50,
         step=0.25,
-        value=50,
+        value=25,
         marks={i: str(i) for i in range(0, 51, 1)}
     ),
-    html.Label("Ti – czas zdwojenia:"),
+    html.Label("Czas zdwojenia - Ti:"),
     dcc.Slider(
         id='ti-slider',
         min=0,
         max=10,
         step=0.1,
-        value=10,
+        value=7.5,
         marks={i: str(i) for i in [x / 2 for x in range(101)]}
         #marks = {round(i * 0.1, 1): str(round(i * 0.1, 1)) for i in range(0, 101)}
     ),
-    html.Label("Czas rozniczkowania - Td (0 dla regulatora PD):"),
+    html.Label("Czas rozniczkowania - Td:"),
     dcc.Slider(
         id='td-slider',
         min=0,
-        max=2,
+        max=10,
         step=0.05,
-        value=2,
+        value=1.7,
         marks={i: str(i) for i in [x / 2 for x in range(51)]}
     ),
 
@@ -263,37 +263,37 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
 
     # Tworzenie wykresów
     omega_fig = go.Figure()
-    omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega (rad/s)'))
-    omega_fig.update_layout(title='Prędkość kątowa w czasie', xaxis_title='Czas (s)', yaxis_title='Omega (rad/s)')
+    omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega [rad/s]'))
+    omega_fig.update_layout(title='Prędkość kątowa w czasie', xaxis_title='Czas [s]', yaxis_title='Omega [rad/s]')
 
     acc_fig = go.Figure()
-    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie (m/s²)'))
-    acc_fig.update_layout(title='Przyspieszenie w czasie', xaxis_title='Czas (s)', yaxis_title='A (rad/s²)')
+    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie [m/s²]'))
+    acc_fig.update_layout(title='Przyspieszenie w czasie', xaxis_title='Czas [s]', yaxis_title='A [rad/s²]')
 
     height_fig = go.Figure()
-    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość windy w symulacji (m)'))
-    height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana (m)'))
-    height_fig.update_layout(title='Wysokość w czasie', xaxis_title='Czas (s)', yaxis_title='H (m)')
+    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość windy w symulacji [m]'))
+    height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]'))
+    height_fig.update_layout(title='Wysokość w czasie', xaxis_title='Czas [s]', yaxis_title='H [m]')
 
     current_fig = go.Figure()
-    current_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napiecie (V)'))
-    current_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi (V)'))
-    current_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas (s)', yaxis_title='Napiecie (V)')
+    current_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napiecie [V]'))
+    current_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi [V]'))
+    current_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas [s]', yaxis_title='Napiecie [V]')
 
     fuzzy_fig = go.Figure()
     fuzzy_fig.add_trace(go.Scatter(x=time, y=fuzzy, mode='lines', name='Z regulatora rozmytego'))
-    fuzzy_fig.update_layout(title='Wartości w czasie', xaxis_title='Czas (s)', yaxis_title='Wartosci')
+    fuzzy_fig.update_layout(title='Wartości w czasie', xaxis_title='Czas [s]', yaxis_title='Wartosci')
     equations.is_simulation_realistic()
 
     fuzzy2_fig = go.Figure()
-    fuzzy2_fig.add_trace(go.Scatter(x=time, y=fuzzy2, mode='lines', name='Napiecie (V)'))
-    fuzzy2_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi (V)'))
-    fuzzy2_fig.update_layout(title='Napięcie w czasie z rozmytego', xaxis_title='Czas (s)', yaxis_title='Napiecie (V)')
+    fuzzy2_fig.add_trace(go.Scatter(x=time, y=fuzzy2, mode='lines', name='Napiecie [V]'))
+    fuzzy2_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi [V]'))
+    fuzzy2_fig.update_layout(title='Napięcie w czasie z rozmytego', xaxis_title='Czas [s]', yaxis_title='Napiecie [V]')
 
     height2_fig = go.Figure()
-    height2_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość windy w symulacji (m)'))
-    height2_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana (m)'))
-    height2_fig.update_layout(title='Wysokość w czasie dla rozmytego', xaxis_title='Czas (s)', yaxis_title='H (m)')
+    height2_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość windy w symulacji [m]'))
+    height2_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]'))
+    height2_fig.update_layout(title='Wysokość w czasie dla rozmytego', xaxis_title='Czas [s]', yaxis_title='H [m]')
 
     return omega_fig, acc_fig, height_fig, current_fig, fuzzy_fig, fuzzy2_fig, height2_fig
 
