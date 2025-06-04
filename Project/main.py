@@ -41,7 +41,7 @@ app.layout = html.Div([
         min=0,
         max=50,
         step=0.25,
-        value=25,
+        value=10,
         marks={i: str(i) for i in range(0, 51, 1)}
     ),
     html.Label("Czas zdwojenia - Ti:"),
@@ -50,7 +50,7 @@ app.layout = html.Div([
         min=0,
         max=10,
         step=0.1,
-        value=7.5,
+        value=6.5,
         marks={i: str(i) for i in [x / 2 for x in range(101)]}
         #marks = {round(i * 0.1, 1): str(round(i * 0.1, 1)) for i in range(0, 101)}
     ),
@@ -60,7 +60,7 @@ app.layout = html.Div([
         min=0,
         max=10,
         step=0.05,
-        value=1.7,
+        value=2.5,
         marks={i: str(i) for i in [x / 2 for x in range(51)]}
     ),
 
@@ -250,10 +250,11 @@ def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, 
         u = regulator_fuzzy_PD.rescale_u(u_regulator)
         # By rozkład sił był równomierny należy kręcić kołowrotkiem niezależnie od uchybu
         # Z tego powodu liczę jaki procent zajmujenapięcie potrzebne do zachowania równowagi a resztę przydzielam
-        balancing_voltage = variable.get_equilibrium_voltage()
+        balancing_voltage = equations.get_equilibrium_voltage()
         balance_voltage.append(balancing_voltage)
-        balancing_voltage_percent = balancing_voltage / (abs(const.U_max) + abs(const.U_min) )
-        equations.simulation_step(balancing_voltage + u*(1-balancing_voltage_percent))
+        # balancing_voltage_percent = balancing_voltage / (abs(const.U_max) + abs(const.U_min) )
+        # new_voltage = balancing_voltage + u*(1-balancing_voltage_percent)
+        equations.simulation_step(u_regulator)
 
         fuzzy.append(u_regulator)
         fuzzy2.append(u)

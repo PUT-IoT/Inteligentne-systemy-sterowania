@@ -55,3 +55,47 @@ def is_simulation_realistic():
         ok = False
         print(f"Too high intensity -> Too high power voltage or too low resistance - {intensity}")
     return ok
+
+
+def get_equilibrium_voltage():
+    """
+    Wyznacza napięcie równowagi statycznej dla danej masy ludzi w windzie,
+    zakładając, że prędkość i przyspieszenie = 0 (stan ustalony).
+    """
+    total_mass = const.M_w + variable.M_l
+    opposing_mass = const.M_pw
+    g = const.G
+
+    numerator = (opposing_mass - total_mass) * g
+    # denominator = const.k_m / (const.R * (const.R_w + (const.L_w / const.T_p))) * \
+    #               (1 + (const.L_w / (const.T_p * const.R_w)))
+    denominator = 1/const.R * (const.k_m / (const.R * (const.R_w + (const.L_w / const.T_p))))
+
+    U_eq = numerator / denominator
+    return max(const.U_min, min(U_eq, const.U_max))  # ograniczenie do bezpiecznego zakresu
+
+def get_equilibrium_voltage2():
+    part_1 = const.k_m / (const.R * (const.R_w + const.L_w / const.T_p))
+    # part_2 = variable.U_z + (const.L_w / const.T_p) * (variable.U_pz / const.R_w) - const.k_e * variable.omega_s
+    part_2 =  1 + (const.L_w / const.T_p) * (1 / const.R_w)
+
+    part_3 = (
+        variable.U_z * part_1 * part_2 - (const.M_pw - const.M_w - variable.M_l) * const.G
+    )
+
+    part_4 = const.M_wir / 2 - (const.M_w + variable.M_l + const.M_pw)
+    # a = part_3 / part_4
+    # variable.U_z
+    return (const.M_pw - const.M_w - variable.M_l) * const.G/part_1 * part_2
+
+
+def get_equilibrium_voltage3(M_l):
+    """
+    Oblicza wymagane napięcie wejściowe (U_in), aby przyspieszenie układu wynosiło 0,
+    zakładając, że omega_s = 0 i U_z = U_pz.
+    """
+    # Skróty pomocnicze dla czytelności
+    numerator = (const.M_pw - const.M_w - M_l) * const.G * const.R * (const.R_w + const.L_w / const.T_p)
+    denominator = const.k_m * (1 + (const.L_w / (const.T_p * const.R_w)))
+
+    return numerator / denominator

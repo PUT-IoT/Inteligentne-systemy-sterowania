@@ -3,6 +3,7 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import variable
 import const
+import equations
 
 # Zakresy wejściowe
 e_range = np.arange(-5, 5.01, 0.01)
@@ -88,11 +89,11 @@ def regulator_fuzzy_PD():
     try:
         simulator.compute()
         # print(simulator.output['delta_u'])
-        # return variable.get_equilibrium_voltage() + simulator.output['delta_u']
+        # return equations.get_equilibrium_voltage() + simulator.output['delta_u']
         return simulator.output['delta_u']
-        # return variable.get_equilibrium_voltage()
+        # return equations.get_equilibrium_voltage()
     except:
-        return variable.get_equilibrium_voltage()
+        return equations.get_equilibrium_voltage()
 
 def rescale_u(u):
     # u = np.clip(u, const.U_min_pi, const.U_max_pi)

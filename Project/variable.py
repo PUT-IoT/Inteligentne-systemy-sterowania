@@ -32,18 +32,3 @@ e_aff = 2 # przynależność uchybu
 ce_aff = 1 # przynależność
 output_aff = 0.5 * 10
 
-def get_equilibrium_voltage():
-    """
-    Wyznacza napięcie równowagi statycznej dla danej masy ludzi w windzie,
-    zakładając, że prędkość i przyspieszenie = 0 (stan ustalony).
-    """
-    total_mass = const.M_w + M_l
-    opposing_mass = const.M_pw
-    g = const.G
-
-    numerator = (opposing_mass - total_mass) * g
-    denominator = const.k_m / (const.R * (const.R_w + const.L_w / const.T_p)) * \
-                  (1 + (const.L_w / (const.T_p * const.R_w)))
-
-    U_eq = numerator / denominator
-    return max(const.U_min, min(U_eq, const.U_max))  # ograniczenie do bezpiecznego zakresu
