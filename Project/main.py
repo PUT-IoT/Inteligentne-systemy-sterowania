@@ -19,18 +19,18 @@ app.layout = html.Div([
     dcc.Slider(
         id='uz-slider',
         min=0,
-        max=40,
+        max=20,
         step=1,
-        value=1,
-        marks={i: str(i) for i in range(0, 41, 1)}
+        value=10,
+        marks={i: str(i) for i in range(0, 21, 1)}
     ),
     html.Label("Masa ludzi - netto windy [kg]:"),
     dcc.Slider(
         id='ml-slider',
         min=0,
         max=200,
-        step=10,
-        value=0,
+        step=1,
+        value=100,
         marks={i: str(i) for i in range(0, 201, 10)}
     ),
 
@@ -39,29 +39,36 @@ app.layout = html.Div([
     dcc.Slider(
         id='kp-slider',
         min=0,
-        max=50,
-        step=0.25,
-        value=10,
-        marks={i: str(i) for i in range(0, 51, 1)}
+        max=5,
+        step=0.1,
+        value=2,
+        marks={
+            int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
+            for i in [round(x * 0.2, 2) for x in range(0, 51)]
+        }
     ),
     html.Label("Czas zdwojenia - Ti:"),
     dcc.Slider(
         id='ti-slider',
         min=0,
-        max=10,
-        step=0.1,
-        value=6.5,
-        marks={i: str(i) for i in [x / 2 for x in range(101)]}
-        #marks = {round(i * 0.1, 1): str(round(i * 0.1, 1)) for i in range(0, 101)}
+        max=1,
+        step=0.01,
+        value=0,
+        marks = {i: str(i) for i in [0] + [round(x / 20, 2) for x in range(1, 20)] + [1]}
     ),
+
     html.Label("Czas rozniczkowania - Td:"),
     dcc.Slider(
         id='td-slider',
         min=0,
-        max=10,
+        max=5,
         step=0.05,
-        value=2.5,
-        marks={i: str(i) for i in [x / 2 for x in range(51)]}
+        value=3.5,
+        marks={
+            int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
+            for i in [round(x * 0.2, 2) for x in range(0, 51)]
+        }
+
     ),
 
     # html.H2("Parametry regulatora rozmytego PD:"),
