@@ -6,6 +6,7 @@ import equations
 import variable
 import regulator_PD
 import regulator_fuzzy_PD
+import simpful_fuzzy_PD
 
 steps = int(const.T_s / const.T_p)
 
@@ -35,7 +36,7 @@ app.layout = html.Div([
                 min=0,
                 max=200,
                 step=1,
-                value=100,
+                value=0,
                 marks={i: str(i) for i in range(0, 201, 10)},
                 className='pastel-slider'
             ),
@@ -135,10 +136,15 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
     equations.reset_simulation()
 
     for i in range(steps):
-        u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
+        # u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
+        variable.H_requested = Uz
+        u_regulator = simpful_fuzzy_PD.regulator_fuzzy_PD()
+
+        # new_value = min(const.U_max, max(const.U_min, u_regulator))
+        # u_regulator = new_value
+
         balancing_voltage = current_values[-1]
         balance_voltage.append(balancing_voltage)
-
         equations.simulation_step(u_regulator)
 
         fuzzy.append(u_regulator)
