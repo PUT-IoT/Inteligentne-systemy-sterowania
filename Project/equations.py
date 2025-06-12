@@ -30,7 +30,7 @@ def simulation_step(new_U):
     variable.U_pz = variable.U_z
 
 def reset_simulation():
-    variable.M_l = 0
+    # variable.M_l = 0
     variable.U_z = 0
     variable.U_pz = 0
     variable.omega_s = 0
@@ -38,11 +38,11 @@ def reset_simulation():
     variable.H_p = 0
     variable.A = 0
 
-    variable.H_requested = 0
+    # variable.H_requested = 0
     variable.sum_e = 0
-    variable.Kp = 0
-    variable.Ti = 0
-    variable.Td = 0
+    # variable.Kp = 0
+    # variable.Ti = 0
+    # variable.Td = 0
 # https://www.gmv.pl/wytyczne-elektryczne.html
 def is_simulation_realistic():
     ok = True
