@@ -5,207 +5,103 @@ import const
 import equations
 import variable
 import regulator_PD
-# import regulator_fuzzy_PI
 import regulator_fuzzy_PD
 import simpful_fuzzy_PD
+
 steps = int(const.T_s / const.T_p)
 
-# apka Dash
+# Aplikacja Dash
 app = Dash(__name__)
 
 app.layout = html.Div([
     html.H1("Symulacja silnika – sterowanie napięciem"),
-    html.H2("Zmienne w układzie:"),
-    html.Label("Wysokość zadana H [m]:"),
-    dcc.Slider(
-        id='uz-slider',
-        min=0,
-        max=20,
-        step=1,
-        value=10,
-        marks={i: str(i) for i in range(0, 21, 1)}
-    ),
-    html.Label("Masa ludzi - netto windy [kg]:"),
-    dcc.Slider(
-        id='ml-slider',
-        min=0,
-        max=200,
-        step=1,
-        value=0,
-        marks={i: str(i) for i in range(0, 201, 10)}
-    ),
 
-    html.H2("Parametry regulatora klasycznego:"),
-    html.Label("Wzmocnienie regulatora - Kp:"),
-    dcc.Slider(
-        id='kp-slider',
-        min=0,
-        max=5,
-        step=0.1,
-        value=2,
-        marks={
-            int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
-            for i in [round(x * 0.2, 2) for x in range(0, 51)]
-        }
-    ),
-    html.Label("Czas zdwojenia - Ti:"),
-    dcc.Slider(
-        id='ti-slider',
-        min=0,
-        max=1,
-        step=0.01,
-        value=0,
-        marks = {i: str(i) for i in [0] + [round(x / 20, 2) for x in range(1, 20)] + [1]}
-    ),
+    html.Div([
+        # Lewa kolumna - suwaki
+        html.Div([
+            html.H2("Zmienne w układzie:"),
+            html.Label("Wysokość zadana H [m]:"),
+            dcc.Slider(
+                id='uz-slider',
+                min=0,
+                max=20,
+                step=1,
+                value=10,
+                marks={i: str(i) for i in range(0, 21, 1)},
+                className='pastel-slider'
+            ),
+            html.Label("Masa ludzi - netto windy [kg]:"),
+            dcc.Slider(
+                id='ml-slider',
+                min=0,
+                max=200,
+                step=1,
+                value=0,
+                marks={i: str(i) for i in range(0, 201, 10)},
+                className='pastel-slider'
+            ),
 
-    html.Label("Czas rozniczkowania - Td:"),
-    dcc.Slider(
-        id='td-slider',
-        min=0,
-        max=5,
-        step=0.05,
-        value=3.5,
-        marks={
-            int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
-            for i in [round(x * 0.2, 2) for x in range(0, 51)]
-        }
+            html.H2("Parametry regulatora klasycznego:"),
+            html.Label("Wzmocnienie regulatora - Kp:"),
+            dcc.Slider(
+                id='kp-slider',
+                min=0,
+                max=5,
+                step=0.1,
+                value=2,
+                marks={i: str(i) for i in [0] + [round(x * 0.5, 2) for x in range(1, 10)] + [5]},
+                className='pastel-slider'
+            ),
+            html.Label("Czas zdwojenia - Ti:"),
+            dcc.Slider(
+                id='ti-slider',
+                min=0,
+                max=1,
+                step=0.01,
+                value=0,
+                marks={int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
+                       for i in [round(x * 0.2, 2) for x in range(0, 51)]},
+                className='pastel-slider'
+            ),
+            html.Label("Czas różniczkowania - Td:"),
+            dcc.Slider(
+                id='td-slider',
+                min=0,
+                max=5,
+                step=0.05,
+                value=3.5,
+                marks={i: str(i) for i in [0] + [round(x * 0.5, 2) for x in range(1, 10)] + [5]},
+                className='pastel-slider'
+            ),
+        ], style={'width': '30%', 'padding': '10px'}),
 
-    ),
-
-    # html.H2("Parametry regulatora rozmytego PD:"),
-    # html.Label("Regulator PI rozmyty - wartość bardzo duzy ujemny:"),
-    # dcc.Slider(
-    #     id='bdu-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.1,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość duzy ujemny:"),
-    # dcc.Slider(
-    #     id='du-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.2,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość średni ujemny:"),
-    # dcc.Slider(
-    #     id='su-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.4,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość mały ujemny:"),
-    # dcc.Slider(
-    #     id='mu-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.6,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość około zera:"),
-    # dcc.Slider(
-    #     id='z-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.8,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość mały dodatni:"),
-    # dcc.Slider(
-    #     id='md-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.6,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość średni dodatni:"),
-    # dcc.Slider(
-    #     id='sd-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.4,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość duzy dodatni:"),
-    # dcc.Slider(
-    #     id='dd-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.2,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-    # html.Label("Regulator PI rozmyty - wartość bardzo duzy dodatni:"),
-    # dcc.Slider(
-    #     id='bdd-slider',
-    #     min=0,
-    #     max=1,
-    #     step=0.01,
-    #     value=0.1,
-    #     marks={i: str(i) for i in [x / 10 for x in range(11)]}
-    # ),
-
-    # html.Label("Regulator PD rozmyty - wartość przynależności trójkąta:"),
-    # dcc.Slider(
-    #     id='affiliation-slider',
-    #     min=0,
-    #     max=10,
-    #     step=0.25,
-    #     value=2,
-    #     marks={i: str(i) for i in range(0, 11, 1)}
-    # ),
-
-
-
-
-    dcc.Graph(id='height-plot'),
-    dcc.Graph(id='omega-plot'),
-    dcc.Graph(id='acc-plot'),
-    dcc.Graph(id='current-plot'),
-    dcc.Graph(id='height2-plot'),
-    dcc.Graph(id='fuzzy-plot'),
-    # dcc.Graph(id='fuzzy2-plot'),
+        # Prawa kolumna - wykresy
+        html.Div([
+            html.H2("Wykresy:"),
+            dcc.Graph(id='height-plot'),
+            dcc.Graph(id='omega-plot'),
+            dcc.Graph(id='acc-plot'),
+            dcc.Graph(id='combined-voltage-plot'),
+        ], className="graph-panel", style={'width': '70%', 'padding': '10px'}),
+    ], style={'display': 'flex', 'flexDirection': 'row'})
 ])
 
+
 @app.callback(
-    [Output('omega-plot', 'figure'),
-     Output('acc-plot', 'figure'),
-     Output('height-plot', 'figure'),
-     Output('current-plot', 'figure'),
-     Output('fuzzy-plot', 'figure'),
-     # Output('fuzzy2-plot', 'figure'),
-     Output('height2-plot', 'figure'),],
-    [Input('uz-slider', 'value'),
-     Input('ml-slider', 'value'),
-
-     Input('kp-slider', 'value'),
-     Input('ti-slider', 'value'),
-     Input('td-slider', 'value'),
-
-    # Input('bdu-slider', 'value'),
-    # Input('du-slider', 'value'),
-    # Input('su-slider', 'value'),
-    # Input('mu-slider', 'value'),
-    # Input('z-slider', 'value'),
-    # Input('md-slider', 'value'),
-    # Input('sd-slider', 'value'),
-    # Input('dd-slider', 'value'),
-    # Input('bdd-slider', 'value'),
-
-    # Input('affiliation-slider', 'value'),
-     ]
+    [
+        Output('omega-plot', 'figure'),
+        Output('acc-plot', 'figure'),
+        Output('height-plot', 'figure'),
+        Output('combined-voltage-plot', 'figure'),
+    ],
+    [
+        Input('uz-slider', 'value'),
+        Input('ml-slider', 'value'),
+        Input('kp-slider', 'value'),
+        Input('ti-slider', 'value'),
+        Input('td-slider', 'value'),
+    ]
 )
-# def update_simulation(Uz, M_l, Kp, Ti, Td, BDU, DU, SU, MU, Z, MD, SD, DD, BDD, e_aff):
 def update_simulation(Uz, M_l, Kp, Ti, Td):
 
     omega_values = []
@@ -219,21 +115,9 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
     equations.reset_simulation()
     variable.H_requested = Uz
     variable.M_l = M_l
-
     variable.Kp = Kp
     variable.Ti = Ti
     variable.Td = Td
-
-    # variable.BDU = BDU
-    # variable.DU = DU
-    # variable.SU = SU
-    # variable.MU = MU
-    # variable.Z = Z
-    # variable.MD = MD
-    # variable.SD = SD
-    # variable.DD = DD
-    # variable.BDD = BDD
-    # variable.e_aff = e_aff
 
     for i in range(steps):
         u_regulator = regulator_PD.PD_new_current()
@@ -247,68 +131,55 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
         current_values.append(variable.U_z)
         requested_h_p.append(variable.H_requested)
 
-
     fuzzy = []
-    fuzzy2 = []
     height_values2 = []
     equations.reset_simulation()
 
-
     for i in range(steps):
+        # u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
         variable.H_requested = Uz
         u_regulator = simpful_fuzzy_PD.regulator_fuzzy_PD()
-        # u = regulator_fuzzy_PD.rescale_u(u_regulator)
-        # By rozkład sił był równomierny należy kręcić kołowrotkiem niezależnie od uchybu
-        # Z tego powodu liczę jaki procent zajmujenapięcie potrzebne do zachowania równowagi a resztę przydzielam
-        # balancing_voltage = equations.get_equilibrium_voltage3(variable.M_l)
+
+        # new_value = min(const.U_max, max(const.U_min, u_regulator))
+        # u_regulator = new_value
+
         balancing_voltage = current_values[-1]
         balance_voltage.append(balancing_voltage)
-        # balancing_voltage_percent = balancing_voltage / (abs(const.U_max) + abs(const.U_min) )
-        # new_voltage = balancing_voltage + u*(1-balancing_voltage_percent)
         equations.simulation_step(u_regulator)
 
         fuzzy.append(u_regulator)
-        # fuzzy2.append(u)
         height_values2.append(variable.H_p)
-        # if i % 10 == 0:
-            # print(i)
 
-    # Tworzenie wykresów
+    # Wykres prędkości kątowej
     omega_fig = go.Figure()
-    omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega [rad/s]'))
+    omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega [rad/s]', line=dict(color='#66bb6a')))
     omega_fig.update_layout(title='Prędkość kątowa w czasie', xaxis_title='Czas [s]', yaxis_title='Omega [rad/s]')
 
+    # Wykres przyspieszenia
     acc_fig = go.Figure()
-    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie [m/s²]'))
+    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie [m/s²]', line=dict(color='#66bb6a')))
     acc_fig.update_layout(title='Przyspieszenie w czasie', xaxis_title='Czas [s]', yaxis_title='A [rad/s²]')
 
+    # Wykres wysokości - klasyczny i rozmyty
     height_fig = go.Figure()
-    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość windy w symulacji [m]'))
-    height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]'))
-    height_fig.update_layout(title='Wysokość w czasie', xaxis_title='Czas [s]', yaxis_title='H [m]')
+    height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość klasyczny [m]', line=dict(color='#66bb6a')))  # zielony
+    height_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość fuzzy [m]', line=dict(color='#ab47bc')))  # fioletowy
+    height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]', line=dict(color='#ff8ecb', dash='dash')))
+    height_fig.update_layout(title='Wysokość w czasie - porównanie klasyczny vs rozmyty',
+                             xaxis_title='Czas [s]', yaxis_title='H [m]')
 
-    current_fig = go.Figure()
-    current_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napiecie [V]'))
-    current_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi [V]'))
-    current_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas [s]', yaxis_title='Napiecie [V]')
+    # Wspólny wykres napięcia
+    combined_voltage_fig = go.Figure()
+    combined_voltage_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napięcie klasyczne [V]', line=dict(color='#66bb6a')))
+    combined_voltage_fig.add_trace(go.Scatter(x=time, y=fuzzy, mode='lines', name='Napięcie fuzzy [V]', line=dict(color='#ab47bc')))
+    combined_voltage_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napięcie równowagi [V]', line=dict(color='#ff8ecb', dash='dash')))
+    combined_voltage_fig.update_layout(title='Napięcie w czasie – klasyczny vs fuzzy',
+                                       xaxis_title='Czas [s]', yaxis_title='Napięcie [V]')
 
-    fuzzy_fig = go.Figure()
-    fuzzy_fig.add_trace(go.Scatter(x=time, y=fuzzy, mode='lines', name='Z regulatora rozmytego'))
-    fuzzy_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi [V]'))
-    fuzzy_fig.update_layout(title='Napięcie w czasie', xaxis_title='Czas [s]', yaxis_title='Napiecie [V]')
     equations.is_simulation_realistic()
 
-    # fuzzy2_fig = go.Figure()
-    # fuzzy2_fig.add_trace(go.Scatter(x=time, y=fuzzy2, mode='lines', name='Napiecie [V]'))
-    # fuzzy2_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napiecie równowagi [V]'))
-    # fuzzy2_fig.update_layout(title='Napięcie w czasie z rozmytego', xaxis_title='Czas [s]', yaxis_title='Napiecie [V]')
+    return omega_fig, acc_fig, height_fig, combined_voltage_fig
 
-    height2_fig = go.Figure()
-    height2_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość windy w symulacji [m]'))
-    height2_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]'))
-    height2_fig.update_layout(title='Wysokość w czasie dla rozmytego', xaxis_title='Czas [s]', yaxis_title='H [m]')
-
-    return omega_fig, acc_fig, height_fig, current_fig, fuzzy_fig, height2_fig
 
 if __name__ == '__main__':
     app.run(debug=True)
