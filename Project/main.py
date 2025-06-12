@@ -50,7 +50,10 @@ app.layout = html.Div([
                 max=5,
                 step=0.1,
                 value=2,
-                marks={i: str(i) for i in [0] + [round(x * 0.5, 2) for x in range(1, 10)] + [5]},
+                marks={
+                    int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
+                    for i in [round(x * 0.5, 2) for x in range(11)]
+                }                ,
                 className='pastel-slider'
             ),
             html.Label("Czas zdwojenia - Ti:"),
@@ -71,9 +74,14 @@ app.layout = html.Div([
                 max=5,
                 step=0.05,
                 value=3.5,
-                marks={i: str(i) for i in [0] + [round(x * 0.5, 2) for x in range(1, 10)] + [5]},
+                marks={
+                    int(i) if i.is_integer() else i: str(int(i)) if i.is_integer() else str(i)
+                    for i in [round(x * 0.5, 2) for x in range(11)]
+                },
                 className='pastel-slider'
             ),
+            html.H2("Stałe w układzie:"),
+            html.Label("Czas próbkowania: 0,1 [s]:"),
         ], style={'width': '30%', 'padding': '10px'}),
 
         # Prawa kolumna - wykresy
@@ -105,7 +113,7 @@ app.layout = html.Div([
 )
 def update_simulation(Uz, M_l, Kp, Ti, Td):
 
-    omega_values = []
+    velocity_values = []
     acc_values = []
     height_values = []
     time = []
@@ -126,7 +134,7 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
         equations.simulation_step(u)
 
         time.append(i * const.T_p)
-        omega_values.append(variable.omega_s)
+        velocity_values.append(variable.V_p)
         acc_values.append(variable.A)
         height_values.append(variable.H_p)
         current_values.append(variable.U_z)
@@ -134,22 +142,13 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
 
     fuzzy = []
     height_values2 = []
+    acc_values_fuzzy = []
+    velocity_values_fuzzy = []
     equations.reset_simulation()
 
     for i in range(steps):
-        # u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
-        variable.H_requested = Uz
-        variable.M_l = M_l
-        # variable.Kp = Kp
-        # variable.Ti = Ti
-        # variable.Td = Td
-        # u_regulator = simpful_fuzzy_PD.regulator_fuzzy_PD()
         u_regulator = simpful_fuzzy_PD.regulator_fuzzy_PD()
-
-
-
-        # new_value = min(const.U_max, max(const.U_min, u_regulator))
-        # u_regulator = new_value
+        u_regulator = simpful_fuzzy_PD.rescale_u(u_regulator)
 
         balancing_voltage = current_values[-1]
         balance_voltage.append(balancing_voltage)
@@ -157,31 +156,35 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
 
         fuzzy.append(u_regulator)
         height_values2.append(variable.H_p)
+        acc_values_fuzzy.append(variable.A)
+        velocity_values_fuzzy.append(variable.V_p)
 
-    # Wykres prędkości kątowej
+    # Wykres prędkości układu
     omega_fig = go.Figure()
-    omega_fig.add_trace(go.Scatter(x=time, y=omega_values, name='Omega [rad/s]', line=dict(color='#66bb6a')))
-    omega_fig.update_layout(title='Prędkość kątowa w czasie', xaxis_title='Czas [s]', yaxis_title='Omega [rad/s]')
+    omega_fig.add_trace(go.Scatter(x=time, y=velocity_values, name='Prędkość klasyczny [m/s]', line=dict(color='#66bb6a')))
+    omega_fig.add_trace(go.Scatter(x=time, y=velocity_values_fuzzy, name='Prędkość fuzzy [m/s]', line=dict(color='#ab47bc')))
+    omega_fig.update_layout(title='Prędkość windy w czasie', xaxis_title='Czas [s]', yaxis_title='Prędkość [m/s]')
 
     # Wykres przyspieszenia
     acc_fig = go.Figure()
-    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie [m/s²]', line=dict(color='#66bb6a')))
-    acc_fig.update_layout(title='Przyspieszenie w czasie', xaxis_title='Czas [s]', yaxis_title='A [rad/s²]')
+    acc_fig.add_trace(go.Scatter(x=time, y=acc_values, mode='lines', name='Przyspieszenie klasyczny [m/s²]', line=dict(color='#66bb6a')))
+    acc_fig.add_trace(go.Scatter(x=time, y=acc_values_fuzzy, mode='lines', name='Przyspieszenie fuzzy [m/s²]', line=dict(color='#ab47bc')))
+    acc_fig.update_layout(title='Przyspieszenie układu w czasie', xaxis_title='Czas [s]', yaxis_title='Przyspieszenie [m/s²]')
 
-    # Wykres wysokości - klasyczny i rozmyty
+    # Wykres wysokości
     height_fig = go.Figure()
     height_fig.add_trace(go.Scatter(x=time, y=height_values, mode='lines', name='Wysokość klasyczny [m]', line=dict(color='#66bb6a')))  # zielony
     height_fig.add_trace(go.Scatter(x=time, y=height_values2, mode='lines', name='Wysokość fuzzy [m]', line=dict(color='#ab47bc')))  # fioletowy
     height_fig.add_trace(go.Scatter(x=time, y=requested_h_p, mode='lines', name='Wysokość zadana [m]', line=dict(color='#ff8ecb', dash='dash')))
-    height_fig.update_layout(title='Wysokość w czasie - porównanie klasyczny vs rozmyty',
-                             xaxis_title='Czas [s]', yaxis_title='H [m]')
+    height_fig.update_layout(title='Wysokość w czasie',
+                             xaxis_title='Czas [s]', yaxis_title='Wysokość [m]')
 
     # Wspólny wykres napięcia
     combined_voltage_fig = go.Figure()
     combined_voltage_fig.add_trace(go.Scatter(x=time, y=current_values, mode='lines', name='Napięcie klasyczne [V]', line=dict(color='#66bb6a')))
     combined_voltage_fig.add_trace(go.Scatter(x=time, y=fuzzy, mode='lines', name='Napięcie fuzzy [V]', line=dict(color='#ab47bc')))
     combined_voltage_fig.add_trace(go.Scatter(x=time, y=balance_voltage, mode='lines', name='Napięcie równowagi [V]', line=dict(color='#ff8ecb', dash='dash')))
-    combined_voltage_fig.update_layout(title='Napięcie w czasie – klasyczny vs fuzzy',
+    combined_voltage_fig.update_layout(title='Napięcie w czasie',
                                        xaxis_title='Czas [s]', yaxis_title='Napięcie [V]')
 
     equations.is_simulation_realistic()
