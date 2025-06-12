@@ -7,6 +7,7 @@ import variable
 import regulator_PD
 # import regulator_fuzzy_PI
 import regulator_fuzzy_PD
+import simpful_fuzzy_PD
 steps = int(const.T_s / const.T_p)
 
 # apka Dash
@@ -30,7 +31,7 @@ app.layout = html.Div([
         min=0,
         max=200,
         step=1,
-        value=100,
+        value=0,
         marks={i: str(i) for i in range(0, 201, 10)}
     ),
 
@@ -254,7 +255,8 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
 
 
     for i in range(steps):
-        u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
+        variable.H_requested = Uz
+        u_regulator = simpful_fuzzy_PD.regulator_fuzzy_PD()
         # u = regulator_fuzzy_PD.rescale_u(u_regulator)
         # By rozkład sił był równomierny należy kręcić kołowrotkiem niezależnie od uchybu
         # Z tego powodu liczę jaki procent zajmujenapięcie potrzebne do zachowania równowagi a resztę przydzielam
