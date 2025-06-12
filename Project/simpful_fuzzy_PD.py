@@ -101,9 +101,10 @@ def regulator_fuzzy_PD():
     try:
         result = FS.inference()
         delta_u = result.get("u", 0)
-        # u_eq = equations.get_equilibrium_voltage3(variable.M_l)
-        u_eq =0
-        return delta_u + u_eq
+        u_eq = equations.get_equilibrium_voltage3(variable.M_l)
+        # u_eq =0
+        u = min(const.U_max, max(const.U_min, delta_u + u_eq))
+        return u
     except Exception as ex:
         print(f"[Fuzzy] Błąd podczas inferencji: {ex}")
         return equations.get_equilibrium_voltage3(variable.M_l)

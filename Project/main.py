@@ -138,8 +138,8 @@ def update_simulation(Uz, M_l, Kp, Ti, Td):
 
     for i in range(steps):
         # u_regulator = regulator_fuzzy_PD.regulator_fuzzy_PD()
-        # variable.H_requested = Uz
-        # variable.M_l = M_l
+        variable.H_requested = Uz
+        variable.M_l = M_l
         # variable.Kp = Kp
         # variable.Ti = Ti
         # variable.Td = Td
